@@ -10,4 +10,12 @@
     height: 150px;
     margin: 5px;
     background-color: white;
+    font-size: 50px;
+    text-align: center;
+    line-height: 150px;
+    cursor: pointer;
+}
+
+.in-grid {
+    background-color: red;
 }
