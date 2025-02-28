@@ -1,0 +1,13 @@
+.board {
+    background-color: black;
+    display: inline-block;
+}
+.row {
+    display: inline-block;
+}
+.cell {
+    width: 150px;
+    height: 150px;
+    margin: 5px;
+    background-color: white;
+}
