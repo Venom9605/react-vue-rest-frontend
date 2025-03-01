@@ -51,17 +51,23 @@ export class GameBrain{
         }
     }
 
-    canMoveGrid(x, y) {
+    canMoveGrid(x, y, ai=false) {
         if (!this.isMoveAdjacent(x, y)) {
-            alert("You can only move the grid to an adjacent cell.");
+            if (!ai) {
+                alert("You can only move the grid to an adjacent cell.");
+            }
             return false;
         }
         if (this.isSamePosition(x, y)) {
-            alert("You cannot move the grid to the same cell.");
+            if (!ai) {
+                alert("You cannot move the grid to the same cell.");
+            }
             return false;
         }
         if (this.isOutOfBounds(x, y)) {
-            alert("You cannot move the grid out of bounds.");
+            if (!ai) {
+                alert("You cannot move the grid out of bounds.");
+            }
             return false;
         }
         return true;
@@ -76,7 +82,7 @@ export class GameBrain{
     }
 
     isOutOfBounds(x, y) {
-        return x > 2 || y > 2;
+        return x < 0 || y < 0 || x > 2 || y > 2;
     }
 
     moveGrid(x, y) {
@@ -166,12 +172,12 @@ export class GameBrain{
         e.target.innerHTML = this.board[x][y] || "&nbsp;";
     }
 
-    checkRows(piece) {
+    checkRows(piece, condition=3) {
         for (let y = this.gridStartY; y < this.gridStartY + 3; y++) {
             let count = 0;
             for (let x = this.gridStartX; x < this.gridStartX + 3; x++) {
                 count = this.#board[x][y] === piece ? count + 1 : 0;
-                if (count >= 3) {
+                if (count >= condition) {
                     return true;
                 }
             }
@@ -179,12 +185,12 @@ export class GameBrain{
         return false;
     }
 
-    checkColumns(piece) {
+    checkColumns(piece, condition=3) {
         for (let x = this.gridStartX; x < this.gridStartX + 3; x++) {
             let count = 0;
             for (let y = this.gridStartY; y < this.gridStartY + 3; y++) {
                 count = this.#board[x][y] === piece ? count + 1 : 0;
-                if (count >= 3) {
+                if (count >= condition) {
                     return true;
                 }
             }
@@ -192,11 +198,11 @@ export class GameBrain{
         return false;
     }
 
-    checkDiagonals(piece) {
+    checkDiagonals(piece, condition=3) {
         for (let y = this.gridStartY; y < this.gridStartY + 3; y++) {
             for (let x = this.gridStartX; x < this.gridStartX + 3; x++) {
-                if (this.checkDiagonalFrom(x, y, 1, 1, piece) || 
-                    this.checkDiagonalFrom(x, y, 1, -1, piece)) {
+                if (this.checkDiagonalFrom(x, y, 1, 1, piece, condition) || 
+                    this.checkDiagonalFrom(x, y, 1, -1, piece, condition)) {
                     return true;
                 }
             }
@@ -204,14 +210,14 @@ export class GameBrain{
         return false;    
     }
 
-    checkDiagonalFrom(startX, startY, dx, dy, piece) {
+    checkDiagonalFrom(startX, startY, dx, dy, piece, condition) {
         let count = 0;
         let x = startX;
         let y = startY;
 
         while (this.isInGrid(x, y)) {
             count = this.#board[x][y] === piece ? count + 1 : 0;
-            if (count >= 3) {
+            if (count >= condition) {
                 return true;
             }
             x += dx;
@@ -246,6 +252,103 @@ export class GameBrain{
 
     }
 
+    makeAiMove() {
+
+        let validMoves = []
+
+        for (let x = this.gridStartX; x < this.gridStartX + 3; x++) {
+            for (let y = this.gridStartY; y < this.gridStartY + 3; y++) {
+                if (this.#board[x][y] === undefined) {
+                    validMoves.push({ x, y });
+                }
+            }
+        }
+        if (this.getCurrentPlayerPieces() > 0 && validMoves.length > 0) {
+
+            for (let move of validMoves) {
+                this.#board[move.x][move.y] = this.currentPlayer === "X" ? "O" : "X";
+                if (this.checkWin(this.currentPlayer === "X" ? "O" : "X")) {
+                    this.#board[move.x][move.y] = undefined;
+                    this.makeAMove(move.x, move.y);
+                    return;
+                }
+                this.#board[move.x][move.y] = undefined;
+            }
+
+            for (let move of validMoves) {
+                this.#board[move.x][move.y] = this.currentPlayer;
+                if (this.checkWin(this.currentPlayer)) {
+                    this.#board[move.x][move.y] = undefined;
+                    this.makeAMove(move.x, move.y);
+                    return;
+                }
+                this.#board[move.x][move.y] = undefined;
+            }
+
+
+            if (validMoves.length > 0) {
+                let randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+                this.makeAMove(randomMove.x, randomMove.y);
+            }
+        }
+
+        else {
+            let randomNumber = Math.floor(Math.random() * 2);
+            if (randomNumber === 0 && validMoves.length > 0) {
+                let playerPieces = [];
+
+                for (let x = this.gridStartX; x < this.gridStartX + 3; x++) {
+                    for (let y = this.gridStartY; y < this.gridStartY + 3; y++) {
+                        if (this.#board[x][y] === this.currentPlayer) {
+                            playerPieces.push({ x, y });
+                        }
+                    }
+                }
+
+                let emptyCells = [];
+
+                for (let x = this.gridStartX; x < this.gridStartX + 3; x++) {
+                    for (let y = this.gridStartY; y < this.gridStartY + 3; y++) {
+                        if (this.#board[x][y] === undefined) {
+                            emptyCells.push({ x, y });
+                        }
+                    }
+                }
+
+                if (playerPieces.length > 0 && emptyCells.length > 0) {
+                    let randomPiece = playerPieces[Math.floor(Math.random() * playerPieces.length)];
+                    let randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                    this.movePiece(randomPiece.x, randomPiece.y, randomCell.x, randomCell.y);
+                }
+            }
+            else {
+                let potentialGridMoves = [
+                    { x: this.gridStartX - 1, y: this.gridStartY },
+                    { x: this.gridStartX + 1, y: this.gridStartY },
+                    { x: this.gridStartX, y: this.gridStartY - 1 },
+                    { x: this.gridStartX, y: this.gridStartY + 1 },
+                    { x: this.gridStartX - 1, y: this.gridStartY - 1 },
+                    { x: this.gridStartX - 1, y: this.gridStartY + 1 },
+                    { x: this.gridStartX + 1, y: this.gridStartY - 1 },
+                    { x: this.gridStartX + 1, y: this.gridStartY + 1 }
+                ];
+
+                let validGridMoves = [];
+
+                for (let move of potentialGridMoves) {
+                    if (this.canMoveGrid(move.x, move.y, true)) {
+                        validGridMoves.push(move);
+                    }
+                }
+
+                if (validGridMoves.length > 0) {
+                    let randomMove = validGridMoves[Math.floor(Math.random() * validGridMoves.length)];
+                    this.moveGrid(randomMove.x, randomMove.y);
+                }
+            }
+        }
+    }
+
     resetGame() {
         this.#board = [[], [], [], [], []];
         this.gridStartX = 1;
@@ -264,6 +367,10 @@ export class GameBrain{
         }
         if (this.onPieceMove) {
             this.onPieceMove();
+        }
+
+        if (typeof window !== 'undefined' && window.resetTimer) {
+            window.resetTimer();
         }
     }
 

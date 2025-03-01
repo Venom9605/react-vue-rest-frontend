@@ -1,19 +1,57 @@
 ﻿import * as UI from "./ui.js";
 import { GameBrain } from "./game.js";
 
-
-
-// FIX: not using hard refresh breaks the game?? maybe
+let container = document.createElement("div");
+container.classList.add("game-container");
+document.body.appendChild(container);
 
 let h1 = document.createElement("h1");
 h1.innerHTML = "Tic Tac Two";
-document.body.appendChild(h1);
+container.appendChild(h1);
 
 let game = new GameBrain();
 
 let h2 = document.createElement("h2");
 h2.innerHTML = `Current Player: ${game.currentPlayer} | Pieces left: ${getPiecesInfo()}`;
-document.body.appendChild(h2);
+container.appendChild(h2);
+
+let timerElement = document.createElement("h2");
+timerElement.id = "timer";
+container.appendChild(timerElement);
+
+let timeRemaining = 5 * 60; // 5 minutes in seconds
+let timerInterval;
+
+function startTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+    timerInterval = setInterval(() => {
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            alert("Time's up! It's a tie. Resetting game.");
+            game.resetGame();
+            return;
+        }
+        timeRemaining--;
+        updateTimer();
+    }, 1000);
+}
+
+function resetTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+    timeRemaining = 5 * 60;
+    updateTimer();
+    startTimer();
+}
+
+function updateTimer() {
+    const minutes = Math.floor(timeRemaining / 60);
+    const seconds = timeRemaining % 60;
+    timerElement.innerHTML = `Time Remaining: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+}
 
 function getPiecesInfo() {
     return game.currentPlayer === "X" ? game.playerXPieces : game.playerOPieces;
@@ -21,24 +59,47 @@ function getPiecesInfo() {
 
 function renderBoard() {
     let existingBoard = document.querySelector('.board');
-    if (existingBoard) {
-        existingBoard.remove();
+    if (!existingBoard) {
+        console.error("Board container missing!");
+        return;
     }
 
-    let board = UI.getInitialBoard(game.board, game.cellUpdateFn.bind(game), game.isInGrid.bind(game));
-    document.body.appendChild(board);
+    existingBoard.innerHTML = "";
+
+    let newBoard = UI.getInitialBoard(game.board, game.cellUpdateFn.bind(game), game.isInGrid.bind(game));
+    
+    if (!newBoard || newBoard.children.length === 0) {
+        console.error("ERROR: Board did not generate correctly!");
+        return;
+    }
+
+    existingBoard.replaceWith(newBoard);
+    boardContainer.appendChild(newBoard);
+    console.log("Board rendered with", newBoard.children.length, "rows."); // Debugging
 }
 
 function updateCurrentPlayer() {
     h2.innerHTML = `Current Player: ${game.currentPlayer} | Pieces left: ${getPiecesInfo()}`;
 }
 
-renderBoard()
+let boardContainer = document.createElement("div");
+boardContainer.classList.add("board-container");
+container.appendChild(boardContainer);
+
+let emptyBoard = document.createElement("div");
+emptyBoard.classList.add("board");
+boardContainer.appendChild(emptyBoard);
+
+renderBoard();
+
+let buttonContainer = document.createElement("div");
+buttonContainer.classList.add("button-container");
+container.appendChild(buttonContainer);
 
 let moveGridButton = document.createElement("button");
 moveGridButton.id = "move-grid-button";
 moveGridButton.innerText = "Move Grid";
-document.body.appendChild(moveGridButton);
+buttonContainer.appendChild(moveGridButton);
 
 game.moveGridButton = moveGridButton;
 
@@ -60,7 +121,7 @@ game.onGridMove = () => {
 let movePieceButton = document.createElement("button");
 movePieceButton.id = "move-piece-button";
 movePieceButton.innerText = "Move Piece";
-document.body.appendChild(movePieceButton);
+buttonContainer.appendChild(movePieceButton);
 
 game.movePieceButton = movePieceButton;
 
@@ -83,8 +144,28 @@ game.onMove = updateCurrentPlayer;
 let resetButton = document.createElement("button");
 resetButton.id = "reset-button";
 resetButton.innerText = "Reset";
-document.body.appendChild(resetButton);
+buttonContainer.appendChild(resetButton);
 
 resetButton.addEventListener("click", () => {
     game.resetGame();
+    timeRemaining = 5 * 60; // Reset timer to 5 minutes
+    startTimer();
 });
+
+let aiMoveButton = document.createElement("button");
+aiMoveButton.id = "ai-move-button";
+aiMoveButton.innerText = "Make AI Move";
+buttonContainer.appendChild(aiMoveButton);
+
+aiMoveButton.addEventListener("click", () => {
+    game.makeAiMove();
+    renderBoard();
+    updateCurrentPlayer();
+});
+
+startTimer();
+updateTimer();
+
+window.resetTimer = resetTimer;
+
+
