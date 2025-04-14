@@ -4,10 +4,13 @@ import './assets/main.css'
 
 import App from './App.vue'
 import router from './router'
+import { BaseService } from './services/BaseService'
 
 const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
+
+BaseService.setupInterceptor();
 
 app.mount('#app')

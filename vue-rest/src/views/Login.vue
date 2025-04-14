@@ -64,7 +64,7 @@ const doLogin = async () => {
                 <a id="forgot-password" href="">Forgot your password?</a>
               </p>
               <p>
-                <a href="">Register as a new user</a>
+                <router-link to="/register" class="nav-link">Register as a new user</router-link>
               </p>
             </div>
           </form>

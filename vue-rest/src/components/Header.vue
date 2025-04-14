@@ -1,7 +1,30 @@
 <script setup lang="ts">
 import { useUserDataStore } from '@/stores/userDataStore';
+import { useRouter } from 'vue-router';
+import { IdentityService } from '@/services/IdentityService';
 
+const router = useRouter();
 const store = useUserDataStore();
+
+const doLogout = async () => {
+  const response = await IdentityService.logout(
+    store.jwt,
+    store.refreshToken
+  );
+        
+  console.log(response);
+
+  if (response.data) {
+    store.jwt = "";
+    store.refreshToken = "";
+
+    router.push({ name: 'Login' });
+  } else {
+    console.log(response.errors?.[0] || 'Logout failed. Please try again.')
+  }
+
+};
+
 </script>
 
 <template>
@@ -14,8 +37,14 @@ const store = useUserDataStore();
           <li v-if="store.jwt.length <= 0">
             <router-link to="/login" class="nav-link">Log in</router-link>
           </li>
+          <li v-if="store.jwt.length <= 0">
+            <router-link to="/register" class="nav-link">Register</router-link>
+          </li>
           <li v-if="store.jwt.length > 0">
-            <router-link to="/" class="nav-link">Log out</router-link>
+            <router-link @click="doLogout()" to="/" class="nav-link">Log out</router-link>
+          </li>
+          <li v-if="store.jwt.length > 0">
+            <router-link to="/tracks" class="nav-link">Tracks</router-link>
           </li>
         </ul>
 
