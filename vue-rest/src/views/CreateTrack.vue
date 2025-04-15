@@ -1,21 +1,32 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { TrackService } from '@/services/TrackService';
+import { TrackCreateService } from '@/services/TrackService';
 import { useUserDataStore } from '@/stores/userDataStore';
+import type { TrackCreateDto } from '@/types/TrackCreateDto'
 
 const router = useRouter();
 const store = useUserDataStore();
-const trackService = new TrackService();
+const trackService = new TrackCreateService();
+
 
 const error = ref<string | null>(null);
-const track = reactive({
+const track = reactive<TrackCreateDto>({
   title: '',
-  filePath: '',
-  coverPath: '',
+  filepath: '',
+  coverpath: ''
 });
 
 const createTrack = async () => {
+  const response = await trackService.addAsync(track);
+
+  console.log(response);
+
+  if (response.data) {
+    router.push({ name: 'Tracks' });
+  } else {
+    error.value = response.errors?.[0] || 'Create failed. Please try again.';
+  }
 
 };
 </script>
@@ -34,16 +45,17 @@ const createTrack = async () => {
 
       <div class="form-group">
         <label for="filePath">File Path</label>
-        <input v-model="track.filePath" type="text" id="filePath" required />
+        <input v-model="track.filepath" type="text" id="filePath" required />
       </div>
 
       <div class="form-group">
         <label for="coverPath">Cover Path</label>
-        <input v-model="track.coverPath" type="text" id="coverPath" />
+        <input v-model="track.coverpath" type="text" id="coverPath" />
       </div>
 
       <button class="button" type="submit">Create</button>
     </form>
+
   </main>
 </template>
 

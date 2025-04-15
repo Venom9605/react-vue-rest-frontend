@@ -4,6 +4,8 @@ import Home from '../views/Home.vue'
 import Register from '@/views/Register.vue'
 import Tracks from '@/views/Tracks.vue'
 import CreateTrack from '@/views/CreateTrack.vue'
+import EditTrack from '@/views/EditTrack.vue'
+import DeleteTrack from '@/views/DeleteTrack.vue'
 
 const routes = [
     {
@@ -30,6 +32,16 @@ const routes = [
         path: '/tracks/create',
         name: 'CreateTrack',
         component: CreateTrack,
+    },
+    {
+        path: '/tracks/edit/:id',
+        name: 'EditTrack',
+        component: EditTrack,
+    },
+    {
+        path: '/tracks/delete/:id',
+        name: 'DeleteTrack',
+        component: DeleteTrack,
     },
 
 ]
