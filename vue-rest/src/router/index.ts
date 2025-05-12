@@ -4,8 +4,10 @@ import Home from '../views/Home.vue'
 import Register from '@/views/Register.vue'
 import Tracks from '@/views/Tracks.vue'
 import CreateTrack from '@/views/CreateTrack.vue'
-import EditTrack from '@/views/EditTrack.vue'
-import DeleteTrack from '@/views/DeleteTrack.vue'
+import Discover from '@/views/Discover.vue'
+import Profile from '@/views/Profile.vue'
+import ProfileTracks from '@/views/ProfileTracks.vue'
+import ProfileSaved from '@/views/ProfileSaved.vue'
 
 const routes = [
     {
@@ -24,25 +26,32 @@ const routes = [
         component: Register,
     },
     {
-        path: '/tracks',
-        name: 'Tracks',
-        component: Tracks,
+        path: '/discover',
+        name: 'Discover',
+        component: Discover,
     },
     {
-        path: '/tracks/create',
+        path: '/profile',
+        name: 'Profile',
+        component: Profile,
+    },
+    {
+        path: '/profile/tracks',
+        name: 'ProfileTracks',
+        component: ProfileTracks,
+    },
+    {
+        path: '/profile/tracks/create',
         name: 'CreateTrack',
         component: CreateTrack,
     },
     {
-        path: '/tracks/edit/:id',
-        name: 'EditTrack',
-        component: EditTrack,
+        path: '/profile/saved',
+        name: 'ProfileSaved',
+        component: ProfileSaved,
     },
-    {
-        path: '/tracks/delete/:id',
-        name: 'DeleteTrack',
-        component: DeleteTrack,
-    },
+
+
 
 ]
 

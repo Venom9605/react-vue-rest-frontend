@@ -4,11 +4,10 @@ import { IdentityService } from "@/services/IdentityService";
 
 export abstract class BaseService {
     protected static axios = axios.create({
-        baseURL: "http://localhost:5081/api/",
+        baseURL: "http://localhost:5081/api/v1.0/",
         headers: {
             common: {
                 Accept: "application/json",
-                "Content-Type": "application/json",
 
             }
         }
