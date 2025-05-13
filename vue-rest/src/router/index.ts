@@ -8,6 +8,7 @@ import Discover from '@/views/Discover.vue'
 import Profile from '@/views/Profile.vue'
 import ProfileTracks from '@/views/ProfileTracks.vue'
 import ProfileSaved from '@/views/ProfileSaved.vue'
+import ProfileEdit from '@/views/ProfileEdit.vue'
 
 const routes = [
     {
@@ -35,6 +36,12 @@ const routes = [
         name: 'Profile',
         component: Profile,
     },
+    {
+        path: '/profile/edit',
+        name: 'ProfileEdit',
+        component: ProfileEdit,
+    },
+    
     {
         path: '/profile/tracks',
         name: 'ProfileTracks',

@@ -5,6 +5,7 @@ import { IdentityService } from '@/services/IdentityService'
 import { useRouter } from 'vue-router'
 import '@/assets/formStyles.css'
 import { watch } from 'vue'
+import { ArtistUploadService } from '@/services/ArtistService'
 
 
 const router = useRouter()
@@ -32,7 +33,7 @@ watch([password, confirmPassword], () => {
 
 const doRegister = async () => {
     const response = await IdentityService.register(
-        email.value, password.value, username.value, bio.value, profilePicture.value);
+        email.value, password.value, username.value, profilePicture.value, bio.value);
 
   console.log(response);
 
@@ -45,6 +46,18 @@ const doRegister = async () => {
     error.value = response.errors?.[0] || 'Register failed. Please try again.';
   }
 }
+
+const handleProfileUpload = async (e: Event) => {
+  const file = (e.target as HTMLInputElement)?.files?.[0];
+  if (!file) return;
+
+  const result = await ArtistUploadService.uploadProfilePicture(file);
+  if (result.data) {
+    profilePicture.value = result.data.path;
+  } else {
+    console.error("Upload failed:", result.errors?.[0]);
+  }
+};
 
 </script>
 
@@ -93,8 +106,8 @@ const doRegister = async () => {
 
             <div class="form-group">
               <label class="form-label" for="Input_ProfilePicture">Profile Cover</label>
-              <input v-model="profilePicture" class="form-control" autocomplete="profilePicture" aria-required="true"
-                placeholder="profilePicture" type="profilePicture">
+              <input type="file" @change="handleProfileUpload" accept="image/*" class="form-control" />
+              <p v-if="profilePicture">Stored path: {{ profilePicture }}</p>
             </div>
             
 
