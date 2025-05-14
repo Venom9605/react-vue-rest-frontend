@@ -9,6 +9,7 @@ import Profile from '@/views/Profile.vue'
 import ProfileTracks from '@/views/ProfileTracks.vue'
 import ProfileSaved from '@/views/ProfileSaved.vue'
 import ProfileEdit from '@/views/ProfileEdit.vue'
+import PublicProfile from '../views/PublicProfile.vue'
 
 const routes = [
     {
@@ -35,6 +36,11 @@ const routes = [
         path: '/profile',
         name: 'Profile',
         component: Profile,
+    },
+    {
+        path: '/profile/:id',
+        name: 'PublicProfile',
+        component: PublicProfile,
     },
     {
         path: '/profile/edit',

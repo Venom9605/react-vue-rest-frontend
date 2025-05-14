@@ -3,7 +3,9 @@ import { useUserDataStore } from '@/stores/userDataStore';
 import { onMounted, reactive, ref } from 'vue';
 import type { IResultObject } from '../types/IResultObject';
 import type { ITrack } from '../domain/ITracks';
-import { TrackGetRandomService, TrackSaveService } from '../services/TrackService';
+import { TrackGetRandomService, TrackSaveService, TrackPlayService  } from '../services/TrackService';
+import { RatingService } from '@/services/RatingService';
+import type { RatingCreateDto } from '@/types/RatingCreateDto';
 
 const store = useUserDataStore();
 const requestIsOngoing = ref(false);
@@ -20,6 +22,9 @@ const fetchPageData = async () => {
 
     track.value = result.data ?? null;
     error.value = result.errors?.[0] ?? null;
+    if (track.value) {
+      await TrackPlayService.incrementPlayCount(track.value.id, store.jwt);
+    }
 
 } catch (e) {
     console.error('Error fetching data:', e);
@@ -42,6 +47,30 @@ const saveCurrentTrack = async () => {
     console.log("Track saved!");
   } else {
     console.error("Save failed:", result.errors[0]);
+  }
+};
+
+const feedbackVisible = ref(false);
+const feedback = reactive<RatingCreateDto>({
+  trackId: '',
+  score: 5,
+  comment: ''
+});
+
+const toggleFeedback = () => {
+  feedbackVisible.value = !feedbackVisible.value;
+  if (track.value) feedback.trackId = track.value.id;
+};
+
+const submitFeedback = async () => {
+  const result = await RatingService.create({ ...feedback });
+  if (!result.errors) {
+    console.log("Feedback submitted!");
+    feedbackVisible.value = false;
+    feedback.comment = '';
+    feedback.score = 5;
+  } else {
+    console.error("Failed to submit:", result.errors[0]);
   }
 };
 
@@ -77,15 +106,17 @@ onMounted(async () => {
             class="audio-player"
           />
   
-          <!-- Duration -->
-          <p><strong>Duration:</strong> {{ track.duration }} seconds</p>
-  
           <!-- Artists -->
           <div v-if="track.artistInTracks.length">
             <h3>Artists:</h3>
             <ul>
               <li v-for="artist in track.artistInTracks" :key="artist.id">
-                {{ artist.artistDisplayName }} ({{ artist.artistRoleName }})
+                <router-link
+                  :to="`/profile/${artist.userId}`"
+                  class="artist-link"
+                >
+                  {{ artist.artistDisplayName }}
+                </router-link> ({{ artist.artistRoleName }})
               </li>
             </ul>
           </div>
@@ -123,7 +154,24 @@ onMounted(async () => {
 
           <div class="track-actions">
             <button @click="skipTrack">⏭️ Skip</button>
+            <button @click="toggleFeedback">💬 Leave Feedback</button>
             <button @click="saveCurrentTrack">💾 Save</button>
+          </div>
+
+          <div v-if="feedbackVisible" class="feedback-form">
+            <label>
+              Rating:
+              <select v-model="feedback.score">
+                <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
+              </select>
+            </label>
+
+            <label>
+              Comment:
+              <textarea v-model="feedback.comment" rows="3" placeholder="Write your thoughts..."></textarea>
+            </label>
+
+            <button @click="submitFeedback">Submit</button>
           </div>
 
         </div>
@@ -153,7 +201,9 @@ onMounted(async () => {
   
   .cover-image {
     max-width: 100%;
-    height: auto;
+    max-height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
     margin-bottom: 1rem;
   }
   
@@ -178,4 +228,41 @@ onMounted(async () => {
 audio::-webkit-media-controls-panel {
   background-color: #9e5e5e;
 }
-  </style>
+
+.artist-link {
+  color: #0055aa;
+  text-decoration: none;
+  font-weight: bold;
+}
+.artist-link:hover {
+  text-decoration: underline;
+}
+
+.feedback-form {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.feedback-form textarea {
+  width: 100%;
+  resize: vertical;
+  padding: 0.5rem;
+}
+
+.feedback-form select {
+  width: 60px;
+  padding: 0.25rem;
+}
+
+.feedback-form button {
+  align-self: flex-start;
+  background-color: #0055aa;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+</style>

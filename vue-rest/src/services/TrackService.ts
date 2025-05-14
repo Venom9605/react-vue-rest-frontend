@@ -36,6 +36,33 @@ export class TrackDeleteService extends BaseEntityService<ITrack> {
     }
 }
 
+export class TrackGetByUserIdService extends BaseService {
+    static async getTracksByUserId(userId: string, jwt: string): Promise<IResultObject<ITrack[]>> {
+        try {
+            const response = await this.axios.get<ITrack[]>(
+                `track/getTracksByUserId/${userId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`
+                    }
+                }
+            );
+
+            if (response.status <= 300) {
+                return { data: response.data };
+            }
+
+            return {
+                errors: [(response.status.toString() + ' ' + response.statusText).trim()],
+            };
+        } catch (error) {
+            return {
+                errors: [JSON.stringify(error)],
+            };
+        }
+    }
+}
+
 export class TrackGetRandomService extends BaseService {
     async getRandomTrack(jwt: string): Promise<IResultObject<ITrack>> {
         try {
@@ -208,5 +235,29 @@ export class TrackUploadService extends BaseService {
       }
   }
 
+export class TrackPlayService extends BaseService {
+  static async incrementPlayCount(trackId: string, jwt: string): Promise<IResultObject<void>> {
+    try {
+      const response = await this.axios.post<void>(
+        `track/IncrementPlayCount/${trackId}`,
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${jwt}`
+          }
+        }
+      );
 
+      if (response.status <= 300) return { data: undefined };
+
+      return {
+        errors: [(response.status.toString() + ' ' + response.statusText).trim()],
+      };
+    } catch (err) {
+      return {
+        errors: [JSON.stringify(err)],
+      };
+    }
+  }
+}
   
