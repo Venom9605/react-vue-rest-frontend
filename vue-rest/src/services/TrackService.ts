@@ -64,32 +64,47 @@ export class TrackGetByUserIdService extends BaseService {
 }
 
 export class TrackGetRandomService extends BaseService {
-    async getRandomTrack(jwt: string): Promise<IResultObject<ITrack>> {
-        try {
-            const response = await BaseService.axios.get<ITrack>(
-                "track/getRandomTrack",
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`
-                    }
-                }
-            );
-
-            if (response.status <= 300) {
-                return { data: response.data };
-            }
-
-            return {
-                errors: [(response.status.toString() + ' ' + response.statusText).trim()],
-            };
-
-        } catch (error) {
-            return {
-                errors: [JSON.stringify(error)],
-            };
+  async getFilteredTrack(
+    jwt: string,
+    tagIds: string[],
+    moodIds: string[]
+  ): Promise<IResultObject<ITrack>> {
+    try {
+      const response = await BaseService.axios.post<ITrack>(
+        "track/getFilteredRandomTrack",
+        { tagIds, moodIds },
+        {
+          headers: {
+            Authorization: `Bearer ${jwt}`
+          }
         }
+      );
+
+      if (response.status <= 300) {
+        return { data: response.data };
+      }
+
+      return {
+        data: undefined,
+        errors: [(response.status.toString() + ' ' + response.statusText).trim()]
+      };
+    } catch (error: any) {
+
+      if (error.response?.status === 404) {
+        return {
+          data: undefined,
+          errors: ["No track found with selected filters."]
+        };
+      }
+
+      return {
+        data: undefined,
+        errors: [error.message || "Unexpected error"]
+      };
     }
+  }
 }
+
 
 
 export class TrackSaveService extends BaseService {

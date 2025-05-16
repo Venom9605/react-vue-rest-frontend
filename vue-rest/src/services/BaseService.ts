@@ -1,10 +1,11 @@
 import axios from "axios";
 import { useUserDataStore } from "@/stores/userDataStore";
 import { IdentityService } from "@/services/IdentityService";
+import { BASE_URL } from "@/config";
 
 export abstract class BaseService {
     protected static axios = axios.create({
-        baseURL: "http://localhost:5081/api/v1.0/",
+        baseURL: `${BASE_URL}api/v1.0/`,
         headers: {
             common: {
                 Accept: "application/json",
@@ -33,7 +34,7 @@ export abstract class BaseService {
                 originalRequest.headers['Authorization'] = `Bearer ${store.jwt}`;
                 return this.axios(originalRequest);
               } else {
-                console.log("REFRESH FAILED!!!!")
+                
                 // refresh failed — force logout or redirect
                 store.jwt = "";
                 store.refreshToken = "";

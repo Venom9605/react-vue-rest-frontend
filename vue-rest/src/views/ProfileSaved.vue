@@ -6,6 +6,7 @@ import { TrackSaveService } from '@/services/TrackService'; // for removeSavedTr
 import { TrackPlayService } from '@/services/TrackService';
 import { RatingService } from '@/services/RatingService';
 import type { RatingCreateDto } from '@/types/RatingCreateDto';
+import { BASE_URL } from '@/config';
 
 const store = useUserDataStore();
 const savedTracks = ref<ITrack[]>([]);
@@ -76,10 +77,10 @@ const submitFeedback = async () => {
     </div>
 
     <div v-for="track in savedTracks" :key="track.id" class="track-card">
-      <img :src="`http://localhost:5081/${track.coverPath}`" class="track-cover" />
+      <img :src="`${BASE_URL}${track.coverPath}`" class="track-cover" />
       <div class="track-info">
         <h2>{{ track.title }}</h2>
-        <audio :src="`http://localhost:5081/${track.filePath}`" 
+        <audio :src="`${BASE_URL}${track.filePath}`" 
           controls class="audio-player" 
           @play="incrementPlay(track.id)"
         />

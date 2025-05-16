@@ -3,8 +3,10 @@ import { ref, onMounted } from 'vue';
 import { ArtistService } from '@/services/ArtistService';
 import type { IArtist } from '@/domain/IArtist';
 import { useUserDataStore } from '@/stores/userDataStore';
+import { BASE_URL } from '@/config';
 
 const artistOfMonth = ref<IArtist | null>(null);
+
 const store = useUserDataStore()
 const error = ref<string | null>(null);
 
@@ -22,13 +24,14 @@ onMounted(loadArtistOfMonth);
 
 <template>
   <div class="home-page">
-    <h1>Welcome to the Music Platform</h1>
+    <h1>Welcome!</h1>
 
     <div class="artist-highlight" v-if="artistOfMonth">
       <h2>🎉 Artist of the Month 🎉</h2>
+
       <img
         v-if="artistOfMonth.profilePicture"
-        :src="`http://localhost:5081/${artistOfMonth.profilePicture}`"
+        :src="`${BASE_URL}${artistOfMonth.profilePicture}`"
         alt="Artist"
         class="artist-image"
       />

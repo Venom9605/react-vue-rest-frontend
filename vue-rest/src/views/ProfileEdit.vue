@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { useUserDataStore } from '@/stores/userDataStore';
 import { ArtistService, ArtistUploadService } from '@/services/ArtistService';
 import type { ArtistEditDto } from '@/types/ArtistEditDto';
+import { BASE_URL } from '@/config';
 
 const store = useUserDataStore();
 const router = useRouter();
@@ -67,7 +68,7 @@ const submit = async () => {
       <label>Upload New Profile Picture</label>
       <input type="file" @change="handleProfileUpload" accept="image/*" />
       <p v-if="profilePicture">Stored path: {{ profilePicture }}</p>
-      <img v-if="profilePicture" :src="`http://localhost:5081/${profilePicture}`" class="preview-img" />
+      <img v-if="profilePicture" :src="`${BASE_URL}${profilePicture}`" class="preview-img" />
 
       <button type="submit">Save</button>
     </form>

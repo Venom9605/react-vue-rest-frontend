@@ -9,6 +9,7 @@ import { LinkTypeGetAllService } from '@/services/LinkTypeService';
 import { TrackUploadService } from '@/services/TrackService';
 import type { TrackCreateDto } from '@/types/TrackCreateDto';
 import router from '@/router';
+import { BASE_URL } from '@/config';
 
 const artistRoleService = new ArtistRoleGetAllService();
 const tagService = new TagGetAllService();
@@ -120,6 +121,8 @@ const submit = async () => {
 };
 
 
+const coverPreviewUrl = ref<string | null>(null);
+
 const handleCoverUpload = async (e: Event) => {
   const file = (e.target as HTMLInputElement)?.files?.[0];
   if (!file) return;
@@ -159,20 +162,23 @@ const handleTrackUpload = async (e: Event) => {
   
       <label>Upload Track File:</label>
       <input type="file" @change="handleTrackUpload" accept="audio/*" />
-      <p v-if="track.filePath">Stored path: {{ track.filePath }}</p>
-
-      <p v-if="track.filePath">Stored path: {{ track.filePath }}</p>
 
       <audio
         v-if="track.filePath"
-        :src="`http://localhost:5081/${track.filePath}`"
+        :src="`${BASE_URL}${track.filePath}`"
         controls
         class="audio-preview"
         />
   
       <label>Upload Cover Image:</label>
       <input type="file" @change="handleCoverUpload" accept="image/*" />
-      <p v-if="track.coverPath">Stored path: {{ track.coverPath }}</p>
+      
+      <img
+        v-if="track.coverPath"
+        :src="`${BASE_URL}${track.coverPath}`"
+        alt="Cover preview"
+        style="max-width: 100%; border-radius: 8px; margin-top: 1rem"
+      />
   
       <label>Your Role:</label>
       <select v-model="track.artistRoleId">
@@ -188,6 +194,7 @@ const handleTrackUpload = async (e: Event) => {
           <option disabled value="">-- Role --</option>
           <option v-for="role in artistRoles" :key="role.id" :value="role.id">{{ role.name }}</option>
         </select>
+          <button @click="track.collaborators.splice(i, 1)">❌</button>
       </div>
   
       <h3>Tags</h3>
@@ -197,6 +204,7 @@ const handleTrackUpload = async (e: Event) => {
           <option disabled value="">-- Tag --</option>
           <option v-for="t in tags" :key="t.id" :value="t.id">{{ t.name }}</option>
         </select>
+        <button @click="track.tagsInTracks.splice(i, 1)">❌</button>
       </div>
   
       <h3>Moods</h3>
@@ -206,6 +214,7 @@ const handleTrackUpload = async (e: Event) => {
           <option disabled value="">-- Mood --</option>
           <option v-for="m in moods" :key="m.id" :value="m.id">{{ m.name }}</option>
         </select>
+          <button @click="track.moodsInTracks.splice(i, 1)">❌</button>
       </div>
   
       <h3>Track Links</h3>
@@ -215,7 +224,8 @@ const handleTrackUpload = async (e: Event) => {
           <option disabled value="">-- Link Type --</option>
           <option v-for="lt in linkTypes" :key="lt.id" :value="lt.id">{{ lt.name }}</option>
         </select>
-        <input v-model="link.url" placeholder="https://..." />
+        <input v-model="link.url" />
+        <button @click="track.trackLinks.splice(i, 1)">❌</button>
       </div>
   
         <div v-if="validated && errors.length" class="error-box">

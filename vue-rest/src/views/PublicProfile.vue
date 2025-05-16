@@ -10,6 +10,7 @@ import { TrackPlayService } from '@/services/TrackService';
 import type { ITrack } from '@/domain/ITracks';
 import { RatingService } from '@/services/RatingService';
 import type { RatingCreateDto } from '@/types/RatingCreateDto'
+import { BASE_URL } from '@/config';
 
 
 const store = useUserDataStore();
@@ -104,7 +105,7 @@ onMounted(async () => {
     <div v-else-if="artist">
       <img
         v-if="artist.profilePicture"
-        :src="`http://localhost:5081/${artist.profilePicture}`"
+        :src="`${BASE_URL}${artist.profilePicture}`"
         alt="Profile"
         class="profile-picture"
       />
@@ -122,16 +123,16 @@ onMounted(async () => {
         <h2>Tracks by {{ artist?.displayName }}</h2>
 
         <div v-for="track in tracks" :key="track.id" class="track-card">
-            <img :src="`http://localhost:5081/${track.coverPath}`" class="track-cover" />
+            <img :src="`${BASE_URL}${track.coverPath}`" class="track-cover" />
 
             <div class="track-info">
                 <h3>{{ track.title }}</h3>
-                <audio :src="`http://localhost:5081/${track.filePath}`" 
+                <audio :src="`${BASE_URL}${track.filePath}`" 
                     controls class="audio-player" 
                     @play="incrementPlay(track.id)"
                 />
-                <button @click="saveTrack(track.id)" class="save-btn">💾 Save</button>
-                <button @click="toggleFeedback(track.id)">💬 Leave Feedback</button>
+                <button v-if="store.jwt.length > 0" @click="saveTrack(track.id)" class="save-btn">💾 Save</button>
+                <button v-if="store.jwt.length > 0" @click="toggleFeedback(track.id)">💬 Leave Feedback</button>
 
                 <div v-if="feedbackVisibleFor === track.id" class="feedback-form">
                     <label>

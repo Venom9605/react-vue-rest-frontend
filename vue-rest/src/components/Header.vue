@@ -2,9 +2,11 @@
 import { useUserDataStore } from '@/stores/userDataStore';
 import { useRouter } from 'vue-router';
 import { IdentityService } from '@/services/IdentityService';
+import { ref } from 'vue';
 
 const router = useRouter();
 const store = useUserDataStore();
+const searchQuery = ref('');
 
 const doLogout = async () => {
   const response = await IdentityService.logout(
@@ -25,6 +27,14 @@ const doLogout = async () => {
 
 };
 
+const performSearch = () => {
+  if (searchQuery.value.trim()) {
+    router.push({ 
+      name: 'SearchResults', 
+      query: { q: searchQuery.value.trim() } });
+  }
+};
+
 </script>
 
 <template>
@@ -33,7 +43,13 @@ const doLogout = async () => {
         <ul>
 
           <li>
-            <router-link to="/" class="nav-link home">Home</router-link>
+            <router-link to="/" class="nav-link home">fairplay.</router-link>
+          </li>
+
+
+
+          <li>
+            <router-link to="/discover" class="nav-link">Discover</router-link>
           </li>
 
           <li v-if="store.jwt.length <= 0">
@@ -43,19 +59,27 @@ const doLogout = async () => {
           <li v-if="store.jwt.length <= 0">
             <router-link to="/register" class="nav-link">Register</router-link>
           </li>
-
-          <li v-if="store.jwt.length > 0">
-            <router-link to="/discover" class="nav-link">Discover</router-link>
+          
+          <li v-if="store.jwt.length > 0" class="search-bar">
+            <input
+              type="text"
+              v-model="searchQuery"
+              @keydown.enter="performSearch"
+              placeholder="Search artists or tracks..."
+            />
+            <button @click="performSearch">🔍</button>
           </li>
 
           <li v-if="store.jwt.length > 0" class="profile-menu">
             <span class="nav-link">Profile ▾</span>
+
             <ul class="dropdown">
               <li><router-link to="/profile">Profile</router-link></li>
               <li><router-link to="/profile/tracks">Your Tracks</router-link></li>
               <li><router-link to="/profile/saved">Saved Tracks</router-link></li>
               <li><a href="#" @click.prevent="doLogout">Log out</a></li>
             </ul>
+
           </li>
 
         </ul>
@@ -153,5 +177,25 @@ li {
   text-decoration: none;
   display: block;
   width: 100%;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-bar input {
+  padding: 5px 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-bar button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
 }
 </style>

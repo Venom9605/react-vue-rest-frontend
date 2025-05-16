@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { useUserDataStore } from '@/stores/userDataStore';
 import { TrackDeleteService, TrackGetAllService } from '@/services/TrackService';
 import type { ITrack } from '@/domain/ITracks';
+import { BASE_URL } from '@/config';
 
 const router = useRouter();
 const store = useUserDataStore();
@@ -45,22 +46,30 @@ const deleteTrack = async (id: string) => {
       </div>
   
       <div v-for="track in tracks" :key="track.id" class="track-card">
-        <img :src="`http://localhost:5081/${track.coverPath}`" class="track-cover" />
+
+        <img :src="`${BASE_URL}${track.coverPath}`" class="track-cover" />
+
         <div class="track-info">
           <h2>{{ track.title }}</h2>
-          <audio :src="`http://localhost:5081/${track.filePath}`" controls class="audio-player" />
+
+          <audio :src="`${BASE_URL}${track.filePath}`" controls class="audio-player" />
+
           <p><strong>Saved:</strong> {{ track.timesSaved }} time<span v-if="track.timesSaved !== 1">s</span></p>
           <p><strong>Played:</strong> {{ track.timesPlayed }} time<span v-if="track.timesPlayed !== 1">s</span></p>
+
           <button class="delete-btn" @click="deleteTrack(track.id)">Delete</button>
 
           <div v-if="track.rating.length" class="ratings-section">
             <h3>Feedback:</h3>
             <ul>
               <li v-for="r in track.rating" :key="r.id" class="rating-entry">
+
                 <router-link :to="`/profile/${r.userId}`" class="comment-author">
                   {{ r.artistDisplayName }}
                 </router-link>
+
                 <span class="score">rated it {{ r.score }}/5</span>
+              
                 <p class="comment">"{{ r.comment }}"</p>
               </li>
             </ul>

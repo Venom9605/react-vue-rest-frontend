@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue';
 import type { IArtist } from '@/domain/IArtist';
 import { useUserDataStore } from '@/stores/userDataStore';
 import { ArtistService } from '@/services/ArtistService';
+import { BASE_URL } from '@/config';
 
 const store = useUserDataStore();
 const artist = ref<IArtist | null>(null);
@@ -29,7 +30,7 @@ onMounted(fetchArtist);
     <div v-else-if="artist">
       <img
         v-if="artist.profilePicture"
-        :src="`http://localhost:5081/${artist.profilePicture}`"
+        :src="`${BASE_URL}${artist.profilePicture}`"
         alt="Profile"
         class="profile-picture"
       />
