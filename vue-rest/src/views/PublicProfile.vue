@@ -20,6 +20,7 @@ const artist = ref<IArtist | null>(null);
 const tracks = ref<ITrack[]>([]);
 
 const error = ref<string | null>(null);
+const saveMessages = reactive<Record<string, string>>({});
 
 const fetchTracks = async () => {
   const userId = route.params.id as string;
@@ -45,8 +46,9 @@ const fetchArtist = async () => {
 const saveTrack = async (id: string) => {
   const result = await TrackSaveService.saveTrack(id);
   if (!result.errors) {
-    console.log("Track saved!");
+    saveMessages[id] = "✅ Track saved!";
   } else {
+        saveMessages[id] = "Already saved.";
     console.error("Save failed:", result.errors[0]);
   }
 };
@@ -127,10 +129,13 @@ onMounted(async () => {
 
             <div class="track-info">
                 <h3>{{ track.title }}</h3>
-                <audio :src="`${BASE_URL}${track.filePath}`" 
-                    controls class="audio-player" 
+                <audio :src="`${BASE_URL}${track.filePath}`"
+                    controls class="audio-player"
                     @play="incrementPlay(track.id)"
                 />
+                <p v-if="saveMessages[track.id]" class="save-message">
+                  {{ saveMessages[track.id] }}
+                </p>
                 <button v-if="store.jwt.length > 0" @click="saveTrack(track.id)" class="save-btn">💾 Save</button>
                 <button v-if="store.jwt.length > 0" @click="toggleFeedback(track.id)">💬 Leave Feedback</button>
 
@@ -163,38 +168,65 @@ onMounted(async () => {
 
 <style scoped>
 .profile-container {
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
-  padding-top: 70px;
+  padding-top: 80px;
+  padding-inline: 1rem;
+  color: #e0e0e0;
 }
 
 .profile-picture {
-  max-width: 150px;
+  width: 150px;
+  height: 150px;
+  object-fit: cover; /* Ensures the image fills the box without distortion */
   border-radius: 50%;
   margin-bottom: 1rem;
+  border: 3px solid #4c00ff66;
+  box-shadow: 0 0 12px rgba(76, 0, 255, 0.3);
+}
+
+h1 {
+  font-size: 2.2rem;
+  color: #fff;
+  border-bottom: 2px solid #4c00ff;
+  padding-bottom: 0.3rem;
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #cccccc;
+  font-size: 1.5rem;
 }
 
 .error {
-  color: red;
+  color: #ff4d4d;
   margin-bottom: 1rem;
 }
 
 .track-card {
   display: flex;
   gap: 1rem;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 1rem;
-  background: #f4f4f4;
-  padding: 0.75rem;
-  border-radius: 8px;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.04);
+  background: #1e1e1e;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.track-card:hover {
+  transform: scale(1.01);
+  transition: transform 0.2s ease;
 }
 
 .track-cover {
   width: 75px;
   height: 75px;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 8px;
+  border: 2px solid #4c00ff33;
 }
 
 .track-info {
@@ -202,22 +234,38 @@ onMounted(async () => {
 }
 
 .track-info h3 {
-  margin: 0 0 0.25rem;
+  margin: 0 0 0.5rem;
   font-size: 1.1rem;
+  color: #fff;
 }
 
 .audio-player {
   width: 100%;
+  margin-bottom: 0.5rem;
 }
 
-.save-btn {
-  background-color: #4caf50;
+.save-btn,
+.track-info button {
+  background-color: #4c00ff;
   color: white;
   border: none;
   padding: 6px 12px;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  margin-right: 0.5rem;
   margin-top: 0.5rem;
+  transition: background 0.2s ease;
+}
+
+.save-btn:hover,
+.track-info button:hover {
+  background-color: #6d3bff;
+}
+
+.save-message {
+  margin-top: 0.4rem;
+  font-size: 0.9rem;
+  color: #b3b3b3;
 }
 
 .feedback-form {
@@ -231,21 +279,43 @@ onMounted(async () => {
   width: 100%;
   resize: vertical;
   padding: 0.5rem;
+  background: #2c2c2c;
+  color: #e0e0e0;
+  border: 1px solid #555;
+  border-radius: 6px;
 }
 
 .feedback-form select {
   width: 60px;
-  padding: 0.25rem;
+  padding: 0.3rem;
+  background: #2c2c2c;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 6px;
 }
 
 .feedback-form button {
   align-self: flex-start;
-  background-color: #0055aa;
+  background-color: #4c00ff;
   color: white;
   border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: 6px 14px;
+  border-radius: 6px;
   cursor: pointer;
+}
+
+.feedback-form button:hover {
+  background-color: #6d3bff;
+}
+
+
+audio {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+audio::-webkit-media-controls-panel {
+  background-color: #4c00ff;
 }
 
 </style>

@@ -159,15 +159,13 @@ onMounted(async () => {
           <p>Loading...</p>
         </div>
 
-        <div v-else-if="track">
+        <div
+          class="track-card-wrapper"
+          v-else-if="track"
+          :style="{ backgroundImage: `url(${BASE_URL}${track.coverPath})` }"
+        >
           <div class="track-card">
             <h2>{{ track.title }}</h2>
-
-            <img 
-              :src="`${BASE_URL}${track.coverPath}`" 
-              alt="Track cover" 
-              class="cover-image" 
-            />
 
             <audio
               :src="`${BASE_URL}${track.filePath}`"
@@ -201,26 +199,24 @@ onMounted(async () => {
               </ul>
             </div>
 
-            <div v-if="track.tagsInTracks.length">
-              <h3>Tags:</h3>
-              <ul>
-                <li v-for="tag in track.tagsInTracks" :key="tag.id">
+            <div v-if="track.tagsInTracks.length || track.moodsInTracks.length" class="tags-moods-wrapper">
+              <div v-if="track.tagsInTracks.length" class="tags-section">
 
-                  {{ tag.tagName }}
+                <h3>Tags:</h3>
+                <ul>
+                  <li v-for="tag in track.tagsInTracks" :key="tag.id">{{ tag.tagName }}</li>
+                </ul>
 
-                </li>
-              </ul>
-            </div>
+              </div>
 
-            <div v-if="track.moodsInTracks.length">
-              <h3>Moods:</h3>
-              <ul>
-                <li v-for="mood in track.moodsInTracks" :key="mood.id">
+              <div v-if="track.moodsInTracks.length" class="moods-section">
 
-                  {{ mood.moodName }}
+                <h3>Moods:</h3>
+                <ul>
+                  <li v-for="mood in track.moodsInTracks" :key="mood.id">{{ mood.moodName }}</li>
+                </ul>
 
-                </li>
-              </ul>
+              </div>
             </div>
 
             <div class="track-actions">
@@ -265,6 +261,7 @@ onMounted(async () => {
             </div>
           </div>
         </div>
+
 
         <div v-else>
           <p v-if="error">{{ error }}</p>
@@ -314,36 +311,54 @@ onMounted(async () => {
   </div>
 </template>
 
-  
+
 <style scoped>
 /* Layout wrapper */
 .discover-wrapper {
   display: flex;
   justify-content: center;
-  padding-top: 70px;
+  color: #e0e0e0;
 }
 
 /* Two-column layout */
 .track-and-filters {
   display: flex;
   gap: 2rem;
-  align-items: flex-start;
+  align-items: center;
 }
-
-/* Main content center */
+/* Main content */
 .discover-container {
   max-width: 600px;
   flex-shrink: 0;
   text-align: left;
 }
 
+.track-card-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  background-size: cover;
+  background-position: center;
+}
+
+.track-card-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  filter: blur(1px) brightness(0.6);
+  z-index: 0;
+}
+
 /* Track card */
 .track-card {
-  background: #f8f8f8;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 0 10px rgba(77, 26, 26, 0.1);
-  margin-top: 2rem;
+  position: relative;
+  z-index: 1;
+  background-color: rgba(30, 30, 30, 0.85);
+  backdrop-filter: blur(1px);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 /* Track image */
@@ -351,90 +366,140 @@ onMounted(async () => {
   max-width: 100%;
   max-height: 250px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 10px;
   margin-bottom: 1rem;
+  border: 2px solid #4c00ff33;
 }
 
-/* Audio player */
+
 .audio-player {
   width: 100%;
   margin-bottom: 1rem;
 }
 audio::-webkit-media-controls-panel {
-  background-color: #9e5e5e;
+  background-color: #4c00ff;
 }
 
-/* Action buttons */
 .track-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-top: 1rem;
 }
 .track-actions button {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.2rem;
   font-size: 1rem;
+  background: #4c00ff;
+  border: none;
+  color: white;
+  border-radius: 6px;
   cursor: pointer;
-  flex-wrap: wrap;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+.track-actions button:hover {
+  background: #6d3bff;
+  transform: scale(1.03);
 }
 
-/* Artist links */
 .artist-link {
-  color: #0055aa;
+  color: #4c00ff;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 600;
 }
 .artist-link:hover {
   text-decoration: underline;
 }
 
-/* Feedback */
+.tags-moods-wrapper {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.tags-section,
+.moods-section {
+  flex: 1;
+}
+
+.tags-section ul,
+.moods-section ul {
+  padding-left: 1rem;
+}
+
 .feedback-form {
   margin-top: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 .feedback-form textarea {
   width: 100%;
   resize: vertical;
   padding: 0.5rem;
+  background: #2c2c2c;
+  color: #e0e0e0;
+  border: 1px solid #555;
+  border-radius: 6px;
 }
 .feedback-form select {
-  width: 60px;
-  padding: 0.25rem;
+  width: 80px;
+  padding: 0.3rem;
+  background: #2c2c2c;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 6px;
 }
 .feedback-form button {
   align-self: flex-start;
-  background-color: #0055aa;
+  background-color: #4c00ff;
   color: white;
   border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: 6px 14px;
+  border-radius: 6px;
   cursor: pointer;
 }
+.feedback-form button:hover {
+  background-color: #6d3bff;
+}
 
-/* Sidebar filters */
 .filters {
   width: 220px;
-  background-color: #f3f3f3;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+  background-color: #2c2c2c;
+  padding: 1.2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
   font-size: 0.95rem;
+}
+
+.filters label {
+  font-weight: 600;
+  color: #ccc;
 }
 
 .filters select {
   width: 100%;
   padding: 0.4rem;
+  background: #1e1e1e;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 6px;
 }
 
 .filters button {
-  padding: 0.4rem 0.6rem;
+  padding: 0.5rem 0.8rem;
   font-size: 0.9rem;
+  background: #4c00ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
+}
+.filters button:hover {
+  background: #6d3bff;
 }
 
 .filter-item {
@@ -446,7 +511,14 @@ audio::-webkit-media-controls-panel {
 .autoplay-toggle {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.4rem;
   font-size: 0.95rem;
+  color: #ccc;
 }
+
+.error-message p {
+  color: #ff4d4d;
+  font-weight: 500;
+}
+
 </style>

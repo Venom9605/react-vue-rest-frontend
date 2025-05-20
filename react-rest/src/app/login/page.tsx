@@ -1,8 +1,17 @@
 "use client";
 
-import { SubmitHandler, useForm } from "react-hook-form";
+import { AccountContext } from "@/context/AccountContext";
+import { AccountService } from "@/services/AccountService";
+import { useRouter } from "next/navigation";
+import { useContext, useState } from "react";
+import { set, SubmitHandler, useForm } from "react-hook-form";
 
 export default function Login() {
+
+	const accountService = new AccountService();
+	const {setAccountInfo} = useContext(AccountContext);
+	const router = useRouter();
+	const [errorMessage, setErrorMessage] = useState("");
 
 	type Inputs = {
 		email: string;
@@ -16,12 +25,38 @@ export default function Login() {
 	} = useForm<Inputs>({
 		defaultValues: {
 			email: "test@test",
-			password: "Test-1"
+			password: "Test-123"
 		}
 	});
 
 	const onSubmit : SubmitHandler<Inputs> = async (data: Inputs) => {
-		console.log(data);
+		setErrorMessage("Loading...");
+
+		try {
+			var result = await accountService.login(data.email, data.password);
+
+			if (result.errors) {
+				setErrorMessage(result.errors[0]);
+				return;
+			}
+
+			setErrorMessage("");
+
+			setAccountInfo!({
+				jwt: result.data!.jwt,
+				refreshToken: result.data!.refreshToken
+			});
+
+			localStorage.setItem("_jwt", result.data!.jwt);
+			localStorage.setItem("_refreshToken", result.data!.refreshToken);
+
+			router.push("/");
+
+
+		} catch (error) {
+			setErrorMessage("Login failed - " + (error as Error).message);
+		}
+
 	};
 
 	return (
@@ -30,7 +65,7 @@ export default function Login() {
 			<div className="col-4"></div>
 			<div className="col-4">
 
-
+			{errorMessage}
 
 			<form onSubmit={handleSubmit(onSubmit)}>
                 <h2>Login</h2>
@@ -50,7 +85,10 @@ export default function Login() {
 					{...register("email", {required: true})}
 					/>
                     <label className="form-label" htmlFor="Input_Email">Email</label>
-                    <span className="text-danger field-validation-valid" data-valmsg-for="Input.Email" data-valmsg-replace="true"></span>
+					{
+					errors.email &&
+                    <span className="text-danger field-validation-valid" data-valmsg-for="Input.Email" data-valmsg-replace="true">Email is required!</span>
+					}
                 </div>
 
                 <div className="form-floating mb-3">
@@ -63,7 +101,9 @@ export default function Login() {
 					{...register("password", {required: true})}
 					/>
                     <label className="form-label" htmlFor="Input_Password">Password</label>
-                    <span className="text-danger field-validation-valid" data-valmsg-for="Input.Password" data-valmsg-replace="true"></span>
+					{errors.password &&
+                    <span className="text-danger field-validation-valid" data-valmsg-for="Input.Password" data-valmsg-replace="true">Password is required!</span>
+					}
                 </div>
 				<div>
 					<button id="login-submit" type="submit" className="w-100 btn btn-lg btn-primary">Log in</button>

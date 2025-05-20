@@ -13,7 +13,7 @@ const doLogout = async () => {
     store.jwt,
     store.refreshToken
   );
-        
+
   console.log(response);
 
   if (response.data) {
@@ -29,8 +29,8 @@ const doLogout = async () => {
 
 const performSearch = () => {
   if (searchQuery.value.trim()) {
-    router.push({ 
-      name: 'SearchResults', 
+    router.push({
+      name: 'SearchResults',
       query: { q: searchQuery.value.trim() } });
   }
 };
@@ -40,13 +40,12 @@ const performSearch = () => {
 <template>
     <header class="navbar">
       <div class="header-container">
-        <ul>
 
+
+        <ul class="nav-left">
           <li>
             <router-link to="/" class="nav-link home">fairplay.</router-link>
           </li>
-
-
 
           <li>
             <router-link to="/discover" class="nav-link">Discover</router-link>
@@ -59,7 +58,7 @@ const performSearch = () => {
           <li v-if="store.jwt.length <= 0">
             <router-link to="/register" class="nav-link">Register</router-link>
           </li>
-          
+
           <li v-if="store.jwt.length > 0" class="search-bar">
             <input
               type="text"
@@ -67,78 +66,104 @@ const performSearch = () => {
               @keydown.enter="performSearch"
               placeholder="Search artists or tracks..."
             />
-            <button @click="performSearch">🔍</button>
           </li>
-
-          <li v-if="store.jwt.length > 0" class="profile-menu">
-            <span class="nav-link">Profile ▾</span>
-
-            <ul class="dropdown">
-              <li><router-link to="/profile">Profile</router-link></li>
-              <li><router-link to="/profile/tracks">Your Tracks</router-link></li>
-              <li><router-link to="/profile/saved">Saved Tracks</router-link></li>
-              <li><a href="#" @click.prevent="doLogout">Log out</a></li>
-            </ul>
-
-          </li>
-
         </ul>
+
+        <div v-if="store.jwt.length > 0" class="profile-menu">
+          <span class="nav-link">Profile ▾</span>
+          <ul class="dropdown">
+            <li><router-link to="/profile">Profile</router-link></li>
+            <li><router-link to="/profile/tracks">Your Tracks</router-link></li>
+            <li><router-link to="/profile/saved">Saved Tracks</router-link></li>
+            <li><a href="#" @click.prevent="doLogout">Log out</a></li>
+          </ul>
+        </div>
+
       </div>
     </header>
 </template>
-  
+
 <style scoped>
 
 .navbar {
-  background-color: #ffffff;
+  background: #121212;
   width: 100%;
   height: 60px;
-  align-items: center;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(76, 0, 255, 0.3);
 }
 
 .header-container {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 10px 20px;
+  padding: 0 2rem;
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: space-between;
 }
 
 ul {
   list-style: none;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 1.5rem;
   padding: 0;
   margin: 0;
 }
 
 li {
-  display: block;
   position: relative;
 }
 
 .nav-link {
-  display: inline-block;
-  vertical-align: baseline;
-  text-decoration: none;
-  color: #000000;
-  font-size: 18px;
-}
-
-.nav-link.home {
-  font-size: 30px;
-  margin-right: 1rem;
-  vertical-align: baseline;
+  color: #e0e0e0;
+  font-size: 16px;
+  font-weight: 500;
+  transition: color 0.2s ease;
 }
 
 .nav-link:hover {
-  text-decoration: underline;
+  color: #4c00ff;
+  text-decoration: none;
 }
 
+.nav-link.home {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -1px;
+}
+
+.search-bar input {
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+  background: #1e1e1e;
+  color: #fff;
+  transition: background 0.3s ease;
+}
+
+.search-bar input::placeholder {
+  color: #aaa;
+}
+
+.search-bar input:focus {
+  background: #2c2c2c;
+}
+
+.search-bar button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  font-size: 18px;
+}
 
 .profile-menu {
   position: relative;
@@ -151,7 +176,7 @@ li {
 .dropdown {
   display: none;
   position: absolute;
-  background-color: #fff;
+  background-color: #17171790;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   list-style: none;
   padding: 0;
@@ -169,33 +194,14 @@ li {
 }
 
 .dropdown li:hover {
-  background-color: #f0f0f0;
+  background-color: #757575;
 }
 
 .dropdown a {
-  color: #000;
+  color: #cfcfcf;
   text-decoration: none;
   display: block;
   width: 100%;
 }
 
-.search-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.search-bar input {
-  padding: 5px 8px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.search-bar button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-}
 </style>

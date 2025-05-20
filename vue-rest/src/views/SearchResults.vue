@@ -49,7 +49,7 @@ watch(() => route.query.q, fetchResults);
             <router-link :to="`/profile/${track.artistInTracks?.[0]?.userId}`">
               {{ track.title }}
             </router-link>
-            
+
           </li>
         </ul>
       </div>
@@ -74,9 +74,61 @@ watch(() => route.query.q, fetchResults);
 
 <style scoped>
 .search-page {
-  padding-top: 70px;
-  max-width: 600px;
+  padding-top: 80px;
+  max-width: 700px;
   margin: 0 auto;
+  color: #e0e0e0;
   text-align: left;
+  padding-inline: 1rem;
+}
+
+h1 {
+  font-size: 2.4rem;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+  border-bottom: 2px solid #4c00ff;
+  padding-bottom: 0.3rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: #cccccc;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  background: #1e1e1e;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  transition: background 0.2s ease;
+}
+
+li:hover {
+  background: #2a2a2a;
+}
+
+a {
+  color: #4c00ff;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+div[role="status"],
+div[role="alert"] {
+  margin-top: 1rem;
+  color: #ccc;
+  font-style: italic;
 }
 </style>

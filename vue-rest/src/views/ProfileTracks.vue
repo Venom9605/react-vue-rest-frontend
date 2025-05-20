@@ -39,12 +39,12 @@ const deleteTrack = async (id: string) => {
 <template>
     <div class="profile-tracks">
       <h1>Your Tracks</h1>
-      <button @click="$router.push('/profile/tracks/create')">+ Create Track</button>
-  
+      <button @click="$router.push('/profile/tracks/create')">+ Upload Track</button>
+
       <div v-if="tracks.length === 0">
         <p>No tracks found.</p>
       </div>
-  
+
       <div v-for="track in tracks" :key="track.id" class="track-card">
 
         <img :src="`${BASE_URL}${track.coverPath}`" class="track-cover" />
@@ -69,7 +69,7 @@ const deleteTrack = async (id: string) => {
                 </router-link>
 
                 <span class="score">rated it {{ r.score }}/5</span>
-              
+
                 <p class="comment">"{{ r.comment }}"</p>
               </li>
             </ul>
@@ -85,29 +85,67 @@ const deleteTrack = async (id: string) => {
 .profile-tracks {
   max-width: 700px;
   margin: 0 auto;
-  padding-top: 70px;
+  padding-top: 80px;
+  padding-inline: 1rem;
+  color: #e0e0e0;
+}
+
+h1 {
+  font-size: 2.2rem;
+  color: #fff;
+  border-bottom: 2px solid #4c00ff;
+  padding-bottom: 0.3rem;
+  margin-bottom: 1.5rem;
+}
+
+button {
+  padding: 0.6rem 1.2rem;
+  background-color: #4c00ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  background-color: #6d3bff;
 }
 
 .track-card {
   display: flex;
   gap: 1rem;
-  align-items: center;
-  margin-bottom: 2rem;
-  background: #f9f9f9;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  background: #1e1e1e;
   padding: 1rem;
   border-radius: 10px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.track-card:hover {
+  transform: scale(1.01);
+  transition: transform 0.2s ease;
 }
 
 .track-cover {
-  width: 100px;
-  height: 100px;
+  width: 75px;
+  height: 75px;
   object-fit: cover;
   border-radius: 8px;
+  border: 2px solid #4c00ff33;
 }
 
 .track-info {
   flex-grow: 1;
+}
+
+.track-info h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+  color: #fff;
 }
 
 .audio-player {
@@ -115,24 +153,36 @@ const deleteTrack = async (id: string) => {
   margin: 0.5rem 0;
 }
 
+audio::-webkit-media-controls-panel {
+  background-color: #4c00ff;
+}
+
 .delete-btn {
   background-color: #ff4444;
   color: white;
   border: none;
   padding: 6px 12px;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.2s ease;
+}
+
+.delete-btn:hover {
+  background-color: #ff1a1a;
 }
 
 .ratings-section {
   margin-top: 1rem;
-  background: #f1f1f1;
+  background: #2c2c2c;
   padding: 0.75rem;
   border-radius: 6px;
 }
 
 .ratings-section h3 {
   margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  color: #ccc;
 }
 
 .rating-entry {
@@ -141,7 +191,7 @@ const deleteTrack = async (id: string) => {
 
 .comment-author {
   font-weight: bold;
-  color: #0055aa;
+  color: #4c00ff;
   text-decoration: none;
 }
 
@@ -151,10 +201,13 @@ const deleteTrack = async (id: string) => {
 
 .score {
   margin-left: 0.5rem;
+  color: #aaa;
 }
 
 .comment {
   margin: 0.25rem 0 0 0;
   font-style: italic;
+  color: #ccc;
 }
+
 </style>

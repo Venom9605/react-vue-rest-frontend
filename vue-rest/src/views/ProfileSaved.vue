@@ -77,13 +77,32 @@ const submitFeedback = async () => {
     </div>
 
     <div v-for="track in savedTracks" :key="track.id" class="track-card">
+
       <img :src="`${BASE_URL}${track.coverPath}`" class="track-cover" />
+
       <div class="track-info">
+
         <h2>{{ track.title }}</h2>
-        <audio :src="`${BASE_URL}${track.filePath}`" 
-          controls class="audio-player" 
+
+        <div v-if="track.artistInTracks?.length">
+          <p class="track-artists">
+            <span v-for="(artist, index) in track.artistInTracks" :key="artist.id">
+              <router-link
+                :to="`/profile/${artist.userId}`"
+                class="artist-link"
+              >
+                {{ artist.artistDisplayName }}
+              </router-link>
+              <span v-if="index < track.artistInTracks.length - 1">, </span>
+            </span>
+          </p>
+        </div>
+
+        <audio :src="`${BASE_URL}${track.filePath}`"
+          controls class="audio-player"
           @play="incrementPlay(track.id)"
         />
+
         <button class="delete-btn" @click="removeSaved(track.id)">Unsave</button>
 
         <button @click="toggleFeedback(track.id)">💬 Leave Feedback</button>
@@ -115,29 +134,67 @@ const submitFeedback = async () => {
 .profile-tracks {
   max-width: 700px;
   margin: 0 auto;
-  padding-top: 70px;
+  padding-top: 80px;
+  padding-inline: 1rem;
+  color: #e0e0e0;
+}
+
+h1 {
+  font-size: 2.2rem;
+  color: #ffffff;
+  border-bottom: 2px solid #4c00ff;
+  padding-bottom: 0.3rem;
+  margin-bottom: 1.5rem;
 }
 
 .track-card {
   display: flex;
   gap: 1rem;
-  align-items: center;
-  margin-bottom: 2rem;
-  background: #f9f9f9;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  background: #1e1e1e;
   padding: 1rem;
   border-radius: 10px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.track-card:hover {
+  transform: scale(1.01);
+  transition: transform 0.2s ease;
 }
 
 .track-cover {
-  width: 100px;
-  height: 100px;
+  width: 75px;
+  height: 75px;
   object-fit: cover;
   border-radius: 8px;
+  border: 2px solid #4c00ff33;
 }
 
 .track-info {
   flex-grow: 1;
+}
+
+.track-info h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+.track-artists {
+  margin: 0.25rem 0;
+  font-size: 0.95rem;
+  color: #ccc;
+}
+
+.artist-link {
+  color: #4c00ff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.artist-link:hover {
+  text-decoration: underline;
 }
 
 .audio-player {
@@ -145,13 +202,26 @@ const submitFeedback = async () => {
   margin: 0.5rem 0;
 }
 
-.delete-btn {
-  background-color: #ff4444;
+audio::-webkit-media-controls-panel {
+  background-color: #4c00ff;
+}
+
+.delete-btn,
+.track-info button {
+  background-color: #4c00ff;
   color: white;
   border: none;
   padding: 6px 12px;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  margin-right: 0.5rem;
+  margin-top: 0.5rem;
+  transition: background 0.2s ease;
+}
+
+.delete-btn:hover,
+.track-info button:hover {
+  background-color: #6d3bff;
 }
 
 .feedback-form {
@@ -165,20 +235,33 @@ const submitFeedback = async () => {
   width: 100%;
   resize: vertical;
   padding: 0.5rem;
+  background: #2c2c2c;
+  color: #e0e0e0;
+  border: 1px solid #555;
+  border-radius: 6px;
 }
 
 .feedback-form select {
   width: 60px;
-  padding: 0.25rem;
+  padding: 0.3rem;
+  background: #2c2c2c;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 6px;
 }
 
 .feedback-form button {
   align-self: flex-start;
-  background-color: #0055aa;
+  background-color: #4c00ff;
   color: white;
   border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: 6px 14px;
+  border-radius: 6px;
   cursor: pointer;
 }
+
+.feedback-form button:hover {
+  background-color: #6d3bff;
+}
+
 </style>

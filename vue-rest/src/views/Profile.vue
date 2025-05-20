@@ -50,29 +50,54 @@ onMounted(fetchArtist);
 
 <style scoped>
 .profile-container {
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
-  padding-top: 70px;
+  padding-top: 80px;
+  padding-inline: 1rem;
+  color: #e0e0e0;
+}
+
+h1 {
+  font-size: 2.2rem;
+  color: #ffffff;
+  border-bottom: 2px solid #4c00ff;
+  padding-bottom: 0.3rem;
+  margin-bottom: 1.5rem;
 }
 
 .profile-picture {
-  max-width: 150px;
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
   border-radius: 50%;
   margin-bottom: 1rem;
+  border: 3px solid #4c00ff66;
+  box-shadow: 0 0 12px rgba(76, 0, 255, 0.3);
+}
+
+p {
+  margin: 0.3rem 0;
+  line-height: 1.5;
 }
 
 .error {
-  color: red;
+  color: #ff4d4d;
   margin-bottom: 1rem;
 }
 
 .edit-btn {
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: #0055aa;
+  margin-top: 1.2rem;
+  padding: 0.6rem 1.2rem;
+  background-color: #4c00ff;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background 0.2s ease;
 }
+
+.edit-btn:hover {
+  background-color: #6d3bff;
+}
+
 </style>

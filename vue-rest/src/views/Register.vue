@@ -107,9 +107,8 @@ const handleProfileUpload = async (e: Event) => {
             <div class="form-group">
               <label class="form-label" for="Input_ProfilePicture">Profile Cover</label>
               <input type="file" @change="handleProfileUpload" accept="image/*" class="form-control" />
-              <p v-if="profilePicture">Stored path: {{ profilePicture }}</p>
             </div>
-            
+
 
             <div>
               <button id="login-submit" type="submit" class="button">Register</button>
