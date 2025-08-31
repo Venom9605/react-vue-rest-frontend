@@ -6,6 +6,7 @@ import { TagGetService, TagDeleteService } from "@/services/TagService";
 import { ITag } from "@/types/domain/ITag";
 import { AccountContext } from "@/context/AccountContext";
 
+
 export default function DeleteTagPage() {
 	const router = useRouter();
 	const params = useParams();

@@ -128,13 +128,10 @@ const submitFeedback = async () => {
 </template>
 
 
-
-
 <style scoped>
 .profile-tracks {
   max-width: 700px;
   margin: 0 auto;
-  padding-top: 80px;
   padding-inline: 1rem;
   color: #e0e0e0;
 }

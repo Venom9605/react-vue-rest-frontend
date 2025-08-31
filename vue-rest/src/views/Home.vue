@@ -51,7 +51,6 @@ onMounted(loadArtistOfMonth);
 
 <style scoped>
 .home-page {
-  padding-top: 80px;
   text-align: center;
   color: #e0e0e0;
 }
